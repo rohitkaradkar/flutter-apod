@@ -1,0 +1,17 @@
+name: Flutter Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run_checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter test
