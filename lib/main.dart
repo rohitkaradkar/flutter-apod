@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:apod/api_key.dart';
 import 'package:apod/picture_response.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,23 +17,28 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<PictureResponse> fetchResponse() async {
-    final response = await http
-        .get(Uri.parse('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY'));
+  //TODO: move it to repository
+  Future<List<PictureResponse>> fetchResponse() async {
+    final response = await http.get(Uri.parse(
+      'https://api.nasa.gov/planetary/apod?api_key=$nasaApiKey&end_date=2023-08-08&start_date=2023-08-01',
+    ));
 
     if (response.statusCode == 200) {
-      return PictureResponse.fromJson(jsonDecode(response.body));
+      final list = jsonDecode(response.body);
+      return (list as List)
+          .map((data) => PictureResponse.fromJson(data))
+          .toList(growable: false);
     } else {
       throw Exception('Failed to load');
     }
   }
 
-  late Future<PictureResponse> futurePicture;
+  late Future<List<PictureResponse>> futurePictures;
 
   @override
   void initState() {
     super.initState();
-    futurePicture = fetchResponse();
+    futurePictures = fetchResponse();
   }
 
   @override
@@ -48,19 +54,22 @@ class _MyAppState extends State<MyApp> {
           title: const Text('APOD'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        body: Center(
-          child: FutureBuilder<PictureResponse>(
-            future: futurePicture,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final picture = snapshot.data!;
-                return Text('${picture.title} on ${picture.date}');
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
+        body: FutureBuilder<List<PictureResponse>>(
+          future: futurePictures,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List<Widget> children = [];
+              for (final picture in snapshot.data!) {
+                children.add(Text(
+                    '${picture.title.trim()}\nby ${picture.copyright?.trim()}\non ${picture.date}'));
+                children.add(const SizedBox(height: 16.0));
               }
-              return const CircularProgressIndicator();
-            },
-          ),
+              return Column(children: children);
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            return const CircularProgressIndicator();
+          },
         ),
       ),
     );

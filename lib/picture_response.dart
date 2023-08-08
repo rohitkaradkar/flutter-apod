@@ -4,7 +4,7 @@ part 'picture_response.g.dart';
 
 @JsonSerializable()
 class PictureResponse {
-  final String copyright;
+  final String? copyright;
   final DateTime date;
   final String explanation;
   @JsonKey(name: 'hdurl')
@@ -14,7 +14,7 @@ class PictureResponse {
   final String title;
 
   PictureResponse({
-    required this.copyright,
+    this.copyright,
     required this.date,
     required this.explanation,
     required this.hdImageUrl,
