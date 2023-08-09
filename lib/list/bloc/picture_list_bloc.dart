@@ -5,7 +5,7 @@ import 'package:apod/api_key.dart';
 import 'package:apod/data/model/picture_response.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
-import 'package:apod/list/models/picture_item.dart';
+import 'package:apod/list/model/picture_item.dart';
 import 'package:bloc/bloc.dart';
 import 'package:http/http.dart' as http;
 
