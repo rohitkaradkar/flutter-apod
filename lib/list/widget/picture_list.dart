@@ -21,8 +21,41 @@ class _PictureListState extends State<PictureList> {
           case PictureListStatus.error:
             return const Center(child: Text('Something went wrong'));
           case PictureListStatus.success:
-            return Center(
-              child: Text('Success - received ${state.pictures.length} items'),
+            return GridView.builder(
+              itemCount: state.pictures.length,
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 240),
+              itemBuilder: (BuildContext context, int index) {
+                final picture = state.pictures[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    alignment: AlignmentDirectional.bottomStart,
+                    children: [
+                      Positioned.fill(
+                        child: Image.network(
+                          picture.url,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          picture.title,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             );
         }
       },
