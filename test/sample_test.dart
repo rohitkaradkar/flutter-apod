@@ -5,13 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:apod/main.dart';
+import 'package:apod/app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('Sample Test', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
-
-    expect(find.text('APOD'), findsOneWidget);
+    await tester.pumpWidget(const ApodApp());
+    expect(find.text('Astronomy Picture of the Day'), findsOneWidget);
   });
 }
