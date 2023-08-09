@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:apod/picture_response.dart';
+import 'package:apod/data/model/picture_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
