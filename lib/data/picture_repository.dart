@@ -1,17 +1,40 @@
 import 'dart:convert';
 
+import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/model/picture_response.dart';
+import 'package:apod/data/picture_dao.dart';
 import 'package:apod/utils/api_key.dart';
 import 'package:apod/utils/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class PictureRepository {
   final http.Client httpClient;
+  final PictureDao pictureDao;
+  VoidCallback? _dbListener;
 
-  PictureRepository({http.Client? httpClient})
-      : httpClient = httpClient ?? http.Client();
+  PictureRepository({
+    http.Client? httpClient,
+    PictureDao? pictureDao,
+  })  : httpClient = httpClient ?? http.Client(),
+        pictureDao = pictureDao ?? PictureDao();
 
-  Future<List<PictureResponse>> fetchPictures() async {
+  Future<void> setListener(Function(Iterable<PictureEntity>) listener) async {
+    _dbListener = () async {
+      final newEntities = await pictureDao.getEntities();
+      if (newEntities.isNotEmpty) {
+        listener(newEntities);
+      }
+    };
+    await pictureDao.addListener(_dbListener!);
+    _dbListener!(); // trigger listener on first set to populate data
+  }
+
+  Future<void> clearListener() async {
+    await pictureDao.removeListener(_dbListener!);
+  }
+
+  Future<void> fetchPictures() async {
     final queryParams = {
       'api_key': kNasaApiKey,
       'start_date': '2023-08-01',
@@ -22,11 +45,25 @@ class PictureRepository {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body);
-      return (list as List)
+      final responses = (list as List)
           .map((data) => PictureResponse.fromJson(data))
           .toList(growable: false);
+      final entities = responses.map(_mapResponseToEntity).toList();
+      await pictureDao.save(entities);
     } else {
       throw Exception(response.body);
     }
+  }
+
+  // map response to entity
+  PictureEntity _mapResponseToEntity(PictureResponse response) {
+    return PictureEntity(
+      date: response.date,
+      copyright: response.copyright,
+      explanation: response.explanation,
+      hdImageUrl: response.hdImageUrl,
+      imageUrl: response.imageUrl,
+      title: response.title,
+    );
   }
 }

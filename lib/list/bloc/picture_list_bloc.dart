@@ -11,7 +11,13 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
 
   PictureListBloc({required this.repository})
       : super(const PictureListState()) {
+    repository.setListener(
+      (newEntities) {
+        super.add(PicturesLoaded(newEntities));
+      },
+    );
     on<FetchPictures>(_onFetchPictures);
+    on<PicturesLoaded>(_onPicturesLoaded);
   }
 
   FutureOr<void> _onFetchPictures(
@@ -19,20 +25,19 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     Emitter<PictureListState> emit,
   ) async {
     try {
-      final responseList = await repository.fetchPictures();
-      final pictureItems = responseList.map((response) {
-        return PictureItem(title: response.title, url: response.imageUrl);
-      }).toList();
-      return emit(
-        state.copyWith(
-          status: PictureListStatus.success,
-          pictures: pictureItems,
-        ),
-      );
+      await repository.fetchPictures();
     } catch (e, stacktrace) {
       print(e);
       print(stacktrace);
-      return emit(state.copyWith(status: PictureListStatus.error));
+      emit(state.copyWith(status: PictureListStatus.error));
     }
+  }
+
+  FutureOr<void> _onPicturesLoaded(
+      PicturesLoaded event, Emitter<PictureListState> emit) {
+    final items = event.entities
+        .map((e) => PictureItem(title: e.title, url: e.imageUrl))
+        .toList(growable: false);
+    emit(state.copyWith(status: PictureListStatus.success, pictures: items));
   }
 }
