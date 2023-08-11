@@ -5,7 +5,7 @@ sealed class PictureListEvent {}
 final class FetchPictures extends PictureListEvent {}
 
 final class PicturesLoaded extends PictureListEvent {
-  final Iterable<PictureEntity> entities;
+  final List<PictureEntity> entities;
 
   PicturesLoaded(this.entities);
 }

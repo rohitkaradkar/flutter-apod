@@ -1,4 +1,5 @@
 import 'package:apod/list/bloc/picture_list_bloc.dart';
+import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,11 +46,19 @@ class _PictureListState extends State<PictureList> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          picture.title,
-                          style: const TextStyle(color: Colors.white),
+                      GestureDetector(
+                        onTap: () {
+                          const snackBar =
+                              SnackBar(content: Text('Fetching more items'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          context.read<PictureListBloc>().add(FetchPictures());
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            picture.title,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],

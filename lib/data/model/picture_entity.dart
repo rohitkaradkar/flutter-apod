@@ -11,7 +11,7 @@ class PictureEntity {
   final String explanation;
 
   @HiveField(2)
-  final String hdImageUrl;
+  final String? hdImageUrl;
 
   @HiveField(3)
   final String imageUrl;

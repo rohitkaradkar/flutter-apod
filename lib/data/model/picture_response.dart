@@ -8,7 +8,7 @@ class PictureResponse {
   final DateTime date;
   final String explanation;
   @JsonKey(name: 'hdurl')
-  final String hdImageUrl;
+  final String? hdImageUrl;
   @JsonKey(name: 'url')
   final String imageUrl;
   final String title;
