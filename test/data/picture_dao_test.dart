@@ -34,10 +34,14 @@ void main() async {
     late PictureDao pictureDao;
 
     setUp(() async {
-      pictureDao = await PictureDao.create('boxName');
+      pictureDao = PictureDao();
     });
 
-    tearDown(() async => {await pictureDao.box.deleteFromDisk()});
+    tearDown(
+      () async {
+        await pictureDao.hiveBox.then((value) => value.deleteFromDisk());
+      },
+    );
 
     test('dao is initialised', () async {
       expect(pictureDao, isNotNull);
@@ -46,7 +50,7 @@ void main() async {
     test('saved entities are accessible', () async {
       await pictureDao.save(fakeEntities);
 
-      final savedEntities = pictureDao.getEntities();
+      final savedEntities = await pictureDao.getEntities();
       expect(savedEntities.length, fakeEntities.length);
       for (final savedEntity in savedEntities) {
         expect(fakeEntities.contains(savedEntity), isTrue);
@@ -72,7 +76,7 @@ void main() async {
       await pictureDao.save([oldEntity]);
       await pictureDao.save([newEntity]);
 
-      final savedEntities = pictureDao.getEntities();
+      final savedEntities = await pictureDao.getEntities();
       expect(savedEntities.length, 1);
       expect(savedEntities.first, newEntity);
     });
