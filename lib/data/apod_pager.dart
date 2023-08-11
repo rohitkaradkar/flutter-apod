@@ -6,8 +6,8 @@ class ApodPager {
       : today = today?.withoutTime() ?? DateTime.now().withoutTime();
 
   ApodPageData getPageData(int pageIndex) {
-    final startDate = today.add(Duration(days: pageIndex * pageSize));
-    final endDate = startDate.add(Duration(days: pageSize - 1));
+    final endDate = today.subtract(Duration(days: pageSize * pageIndex));
+    final startDate = endDate.subtract(Duration(days: pageSize - 1));
     return ApodPageData(startDate: startDate, endDate: endDate);
   }
 }
