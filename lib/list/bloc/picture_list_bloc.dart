@@ -5,6 +5,15 @@ import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
 import 'package:bloc/bloc.dart';
+import 'package:stream_transform/stream_transform.dart';
+
+const _debounceTime = Duration(milliseconds: 300);
+
+EventTransformer<E> debounce<E>(Duration duration) {
+  return (events, mapper) {
+    return events.debounce(duration).switchMap(mapper);
+  };
+}
 
 class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   final PictureRepository repository;
@@ -16,8 +25,14 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         super.add(PicturesLoaded(newEntities));
       },
     );
-    on<FetchPictures>(_onFetchPictures);
-    on<PicturesLoaded>(_onPicturesLoaded);
+    on<FetchPictures>(
+      _onFetchPictures,
+      transformer: debounce(_debounceTime),
+    );
+    on<PicturesLoaded>(
+      _onPicturesLoaded,
+      transformer: debounce(_debounceTime),
+    );
   }
 
   FutureOr<void> _onFetchPictures(

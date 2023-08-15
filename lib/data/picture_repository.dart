@@ -18,7 +18,7 @@ class PictureRepository {
   PictureRepository({
     http.Client? httpClient,
     PictureDao? pictureDao,
-    int pageSize = 16,
+    int pageSize = 10,
   })  : httpClient = httpClient ?? http.Client(),
         pictureDao = pictureDao ?? PictureDao(),
         pager = ApodPager(pageSize: pageSize);
@@ -49,6 +49,7 @@ class PictureRepository {
       'end_date': pageData.endDate,
     };
     final uri = Uri.http(kNasaBaseURL, '/planetary/apod', queryParams);
+    print('fetching $uri');
     final response = await httpClient.get(uri);
 
     if (response.statusCode == 200) {
@@ -59,6 +60,7 @@ class PictureRepository {
       final entities = responses.map(_mapResponseToEntity).toList();
       await pictureDao.save(entities);
     } else {
+      print('error in api $uri');
       throw Exception(response.body);
     }
   }
