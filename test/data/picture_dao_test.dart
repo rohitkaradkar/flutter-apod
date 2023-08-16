@@ -5,14 +5,15 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   group('picture dao test', () {
+    late Box<PictureEntity> testBox;
     setUpAll(() async {
       Hive.init('.');
       Hive.registerAdapter(PictureEntityAdapter());
-      await Hive.openBox<PictureEntity>(PictureDao.boxName);
+      testBox = await Hive.openBox<PictureEntity>(PictureDao.boxName);
     });
 
     tearDownAll(() async {
-      await Hive.box(PictureDao.boxName).deleteFromDisk();
+      await testBox.deleteFromDisk();
       Hive.close();
     });
 
