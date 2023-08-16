@@ -6,14 +6,13 @@ import 'package:apod/data/model/picture_response.dart';
 import 'package:apod/data/picture_dao.dart';
 import 'package:apod/utils/api_key.dart';
 import 'package:apod/utils/constants.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:stream_transform/stream_transform.dart';
 
 class PictureRepository {
   final http.Client httpClient;
   final PictureDao pictureDao;
   final ApodPager pager;
-  VoidCallback? _dbListener;
 
   PictureRepository({
     http.Client? httpClient,
@@ -23,22 +22,19 @@ class PictureRepository {
         pictureDao = pictureDao ?? PictureDao(),
         pager = ApodPager(pageSize: pageSize);
 
-  Future<void> setListener(Function(List<PictureEntity>) listener) async {
-    _dbListener = () async {
-      final newEntities =
-          await pictureDao.getEntities().then((values) => values.toList());
-      if (newEntities.isNotEmpty) {
-        final sortedEntities = newEntities
-          ..sort((a, b) => b.date.compareTo(a.date));
-        listener(sortedEntities);
-      }
-    };
-    await pictureDao.addListener(_dbListener!);
-    _dbListener!(); // trigger listener on first set to populate data
+  Stream<List<PictureEntity>> getEntities() {
+    return pictureDao
+        .getEntitiesSteam()
+        .startWith(pictureDao.getEntities())
+        .map((iterable) {
+      return _sortEntitiesByLatestDate(iterable);
+    });
   }
 
-  Future<void> clearListener() async {
-    await pictureDao.removeListener(_dbListener!);
+  List<PictureEntity> _sortEntitiesByLatestDate(
+    Iterable<PictureEntity> entities,
+  ) {
+    return entities.toList()..sort((a, b) => b.date.compareTo(a.date));
   }
 
   Future<void> fetchPictures(int pageIndex) async {

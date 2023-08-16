@@ -8,9 +8,11 @@ void main() async {
     setUpAll(() async {
       Hive.init('.');
       Hive.registerAdapter(PictureEntityAdapter());
+      await Hive.openBox<PictureEntity>(PictureDao.boxName);
     });
 
     tearDownAll(() async {
+      await Hive.box(PictureDao.boxName).deleteFromDisk();
       Hive.close();
     });
 
@@ -37,11 +39,9 @@ void main() async {
       pictureDao = PictureDao();
     });
 
-    tearDown(
-      () async {
-        await pictureDao.hiveBox.then((value) => value.deleteFromDisk());
-      },
-    );
+    tearDown(() async {
+      await pictureDao.hiveBox.clear();
+    });
 
     test('dao is initialised', () async {
       expect(pictureDao, isNotNull);
@@ -50,7 +50,7 @@ void main() async {
     test('saved entities are accessible', () async {
       await pictureDao.save(fakeEntities);
 
-      final savedEntities = await pictureDao.getEntities();
+      final savedEntities = pictureDao.getEntities();
       expect(savedEntities.length, fakeEntities.length);
       for (final savedEntity in savedEntities) {
         expect(fakeEntities.contains(savedEntity), isTrue);
@@ -76,24 +76,23 @@ void main() async {
       await pictureDao.save([oldEntity]);
       await pictureDao.save([newEntity]);
 
-      final savedEntities = await pictureDao.getEntities();
+      final savedEntities = pictureDao.getEntities();
       expect(savedEntities.length, 1);
       expect(savedEntities.first, newEntity);
     });
 
-    test('listener is notified when database changes', () async {
+    test('stream listener is notified when database changes', () async {
       var changeCount = 0;
-      listener() {
-        changeCount++;
-      }
 
-      pictureDao.addListener(listener);
+      final subscription = pictureDao.getEntitiesSteam().listen((_) {
+        changeCount++;
+      });
 
       expect(changeCount, 0);
       await pictureDao.save(fakeEntities);
-      expect(changeCount, fakeEntities.length);
 
-      pictureDao.removeListener(listener);
+      expect(changeCount, fakeEntities.length);
+      subscription.cancel();
     });
   });
 }
