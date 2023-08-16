@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
@@ -17,14 +18,11 @@ EventTransformer<E> debounce<E>(Duration duration) {
 
 class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   final PictureRepository repository;
+  StreamSubscription<List<PictureEntity>>? _entityStream;
 
   PictureListBloc({required this.repository})
       : super(const PictureListState()) {
-    repository.setListener(
-      (newEntities) {
-        super.add(PicturesLoaded(newEntities));
-      },
-    );
+    on<InitialisePictureList>(_onInitialise);
     on<FetchPictures>(
       _onFetchPictures,
       transformer: debounce(_debounceTime),
@@ -56,5 +54,23 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         .map((e) => PictureItem(title: e.title, url: e.imageUrl))
         .toList(growable: false);
     emit(state.copyWith(status: PictureListStatus.success, pictures: items));
+  }
+
+  FutureOr<void> _onInitialise(
+    InitialisePictureList event,
+    Emitter<PictureListState> emit,
+  ) {
+    _entityStream?.cancel();
+    _entityStream =
+        repository.getEntities().debounce(_debounceTime).listen((entities) {
+      add(PicturesLoaded(entities));
+    });
+    add(FetchPictures());
+  }
+
+  @override
+  Future<void> close() {
+    _entityStream?.cancel();
+    return super.close();
   }
 }
