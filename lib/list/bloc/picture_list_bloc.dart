@@ -20,11 +20,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
 
   PictureListBloc({required this.repository})
       : super(const PictureListState()) {
-    repository.setListener(
-      (newEntities) {
-        super.add(PicturesLoaded(newEntities));
-      },
-    );
+    on<InitialisePictureList>(_onInitialise);
     on<FetchPictures>(
       _onFetchPictures,
       transformer: debounce(_debounceTime),
@@ -56,5 +52,16 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         .map((e) => PictureItem(title: e.title, url: e.imageUrl))
         .toList(growable: false);
     emit(state.copyWith(status: PictureListStatus.success, pictures: items));
+  }
+
+  FutureOr<void> _onInitialise(
+    InitialisePictureList event,
+    Emitter<PictureListState> emit,
+  ) {
+    repository.setListener(
+      (newEntities) {
+        super.add(PicturesLoaded(newEntities));
+      },
+    );
   }
 }

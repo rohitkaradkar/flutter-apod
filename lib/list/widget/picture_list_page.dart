@@ -18,7 +18,7 @@ class PictureListPage extends StatelessWidget {
         create: (_) {
           return PictureListBloc(
             repository: PictureRepository(),
-          )..add(FetchPictures());
+          )..add(InitialisePictureList());
         },
         child: const PictureList(),
       ),
