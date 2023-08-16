@@ -1,20 +1,38 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:apod/api_key.dart';
-import 'package:apod/data/model/picture_response.dart';
+import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
 import 'package:bloc/bloc.dart';
-import 'package:http/http.dart' as http;
+import 'package:stream_transform/stream_transform.dart';
+
+const _debounceTime = Duration(milliseconds: 300);
+
+EventTransformer<E> debounce<E>(Duration duration) {
+  return (events, mapper) {
+    return events.debounce(duration).switchMap(mapper);
+  };
+}
 
 class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
-  final http.Client httpClient;
+  final PictureRepository repository;
 
-  PictureListBloc({required this.httpClient})
+  PictureListBloc({required this.repository})
       : super(const PictureListState()) {
-    on<FetchPictures>(_onFetchPictures);
+    repository.setListener(
+      (newEntities) {
+        super.add(PicturesLoaded(newEntities));
+      },
+    );
+    on<FetchPictures>(
+      _onFetchPictures,
+      transformer: debounce(_debounceTime),
+    );
+    on<PicturesLoaded>(
+      _onPicturesLoaded,
+      transformer: debounce(_debounceTime),
+    );
   }
 
   FutureOr<void> _onFetchPictures(
@@ -22,35 +40,21 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     Emitter<PictureListState> emit,
   ) async {
     try {
-      final responseList = await _fetchResponse();
-      final pictureItems = responseList.map(
-        (response) {
-          return PictureItem(title: response.title, url: response.imageUrl);
-        },
-      ).toList();
-      return emit(
-        state.copyWith(
-          status: PictureListStatus.success,
-          pictures: pictureItems,
-        ),
-      );
+      final newPageIndex = state.pageIndex + 1;
+      await repository.fetchPictures(newPageIndex);
+      emit(state.copyWith(pageIndex: newPageIndex));
     } catch (e, stacktrace) {
-      return emit(state.copyWith(status: PictureListStatus.error));
+      print(e);
+      print(stacktrace);
+      emit(state.copyWith(status: PictureListStatus.error));
     }
   }
 
-  Future<List<PictureResponse>> _fetchResponse() async {
-    final response = await httpClient.get(Uri.parse(
-      'https://api.nasa.gov/planetary/apod?api_key=$nasaApiKey&end_date=2023-08-08&start_date=2023-08-01',
-    ));
-
-    if (response.statusCode == 200) {
-      final list = jsonDecode(response.body);
-      return (list as List)
-          .map((data) => PictureResponse.fromJson(data))
-          .toList(growable: false);
-    } else {
-      throw Exception('Failed to load');
-    }
+  FutureOr<void> _onPicturesLoaded(
+      PicturesLoaded event, Emitter<PictureListState> emit) {
+    final items = event.entities
+        .map((e) => PictureItem(title: e.title, url: e.imageUrl))
+        .toList(growable: false);
+    emit(state.copyWith(status: PictureListStatus.success, pictures: items));
   }
 }

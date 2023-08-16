@@ -1,9 +1,9 @@
+import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_bloc.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/widget/picture_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 class PictureListPage extends StatelessWidget {
   const PictureListPage({super.key});
@@ -16,8 +16,9 @@ class PictureListPage extends StatelessWidget {
       ),
       body: BlocProvider(
         create: (_) {
-          return PictureListBloc(httpClient: http.Client())
-            ..add(FetchPictures());
+          return PictureListBloc(
+            repository: PictureRepository(),
+          )..add(FetchPictures());
         },
         child: const PictureList(),
       ),
