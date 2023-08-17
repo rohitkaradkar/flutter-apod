@@ -38,7 +38,9 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     Emitter<PictureListState> emit,
   ) async {
     try {
+      emit(state.copyWith(status: PictureListStatus.loading));
       await repository.fetchNextPage();
+      emit(state.copyWith(status: PictureListStatus.success));
     } catch (e, stacktrace) {
       print(e);
       print(stacktrace);
@@ -51,7 +53,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     final items = event.entities
         .map((e) => PictureItem(title: e.title, url: e.imageUrl))
         .toList(growable: false);
-    emit(state.copyWith(status: PictureListStatus.success, pictures: items));
+    emit(state.copyWith(pictures: items));
   }
 
   FutureOr<void> _onInitialise(
@@ -59,11 +61,15 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     Emitter<PictureListState> emit,
   ) {
     _entityStream?.cancel();
-    _entityStream =
-        repository.getEntities().debounce(_debounceTime).listen((entities) {
-      add(PicturesLoaded(entities));
-    });
-    add(FetchPictures());
+    _entityStream = repository.getEntities().debounce(_debounceTime).listen(
+      (entities) {
+        if (entities.isEmpty && state.status != PictureListStatus.error) {
+          add(FetchPictures());
+        } else if (entities.isNotEmpty) {
+          add(PicturesLoaded(entities));
+        }
+      },
+    );
   }
 
   @override
