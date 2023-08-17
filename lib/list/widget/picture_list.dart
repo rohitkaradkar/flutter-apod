@@ -2,6 +2,7 @@ import 'package:apod/list/bloc/picture_list_bloc.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,8 +40,10 @@ class _PictureListState extends State<PictureList> {
           case PictureListStatus.error:
             return const Center(child: Text('Something went wrong'));
           case PictureListStatus.success:
+            final itemCount =
+                state.pictures.isEmpty ? 0 : state.pictures.length + 1;
             return GridView.builder(
-              itemCount: state.pictures.length + 1,
+              itemCount: itemCount,
               padding: const EdgeInsets.all(8),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -96,9 +99,12 @@ class _GridImageItem extends StatelessWidget {
         alignment: AlignmentDirectional.bottomStart,
         children: [
           Positioned.fill(
-            child: Image.network(
-              picture.url,
+            child: CachedNetworkImage(
+              imageUrl: picture.url,
               fit: BoxFit.cover,
+              placeholder: (context, url) => const Icon(Icons.image_outlined),
+              errorWidget: (context, url, error) =>
+                  const Icon(Icons.broken_image_outlined),
             ),
           ),
           Padding(
