@@ -2,6 +2,7 @@ import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_bloc.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/widget/picture_list.dart';
+import 'package:apod/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,7 @@ class PictureListPage extends StatelessWidget {
       body: BlocProvider(
         create: (_) {
           return PictureListBloc(
-            repository: PictureRepository(),
+            repository: PictureRepository(pageSize: kApiPageSize),
           )..add(InitialisePictureList());
         },
         child: const PictureList(),

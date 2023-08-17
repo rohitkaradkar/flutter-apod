@@ -28,6 +28,19 @@ class PictureDao {
     return hiveBox.values;
   }
 
+  EntityDateRange? getEntityDateRange() {
+    final sortedItems = hiveBox.values.toList();
+    sortedItems
+        .sort((a, b) => a.date.compareTo(b.date)); // ascending order of date
+    if (sortedItems.isNotEmpty) {
+      return EntityDateRange(
+        latest: sortedItems.last.date,
+        oldest: sortedItems.first.date,
+      );
+    }
+    return null;
+  }
+
   /// Regardless of how entities are saved (Iteratively or as Map), Listener is notified for each new entry
   /// eg,
   /// Saves 1 item -> Listener is notified single time
@@ -35,4 +48,11 @@ class PictureDao {
   Stream<Iterable<PictureEntity>> getEntitiesSteam() {
     return hiveBox.watch().map((event) => hiveBox.values);
   }
+}
+
+class EntityDateRange {
+  final DateTime latest;
+  final DateTime oldest;
+
+  EntityDateRange({required this.latest, required this.oldest});
 }

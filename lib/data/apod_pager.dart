@@ -10,6 +10,32 @@ class ApodPager {
     final startDate = endDate.subtract(Duration(days: pageSize - 1));
     return ApodPageData(startDate: startDate, endDate: endDate);
   }
+
+  ApodPageData getNextPage({
+    DateTime? latestEntityDate,
+    DateTime? oldestEntityDate,
+  }) {
+    if (latestEntityDate == null || oldestEntityDate == null) {
+      final endDate = today;
+      final startDate = today.subtract(Duration(days: pageSize - 1));
+      return ApodPageData(startDate: startDate, endDate: endDate);
+    }
+
+    latestEntityDate = latestEntityDate.withoutTime();
+    oldestEntityDate = oldestEntityDate.withoutTime();
+    if (latestEntityDate.isBefore(today)) {
+      final dayDiff = today.day - latestEntityDate.day;
+      final size = (dayDiff > pageSize) ? pageSize : dayDiff;
+
+      final startDate = latestEntityDate.add(const Duration(days: 1));
+      final DateTime endDate = latestEntityDate.add(Duration(days: size));
+      return ApodPageData(startDate: startDate, endDate: endDate);
+    } else {
+      final endDate = oldestEntityDate.subtract(const Duration(days: 1));
+      final startDate = oldestEntityDate.subtract(Duration(days: pageSize));
+      return ApodPageData(startDate: startDate, endDate: endDate);
+    }
+  }
 }
 
 class ApodPageData {

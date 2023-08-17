@@ -32,37 +32,59 @@ class _PictureListState extends State<PictureList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PictureListBloc, PictureListState>(
-      builder: (context, state) {
-        switch (state.status) {
-          case PictureListStatus.loading:
-            return const Center(child: CircularProgressIndicator());
-          case PictureListStatus.error:
-            return const Center(child: Text('Something went wrong'));
-          case PictureListStatus.success:
-            final itemCount =
-                state.pictures.isEmpty ? 0 : state.pictures.length + 1;
-            return GridView.builder(
-              itemCount: itemCount,
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                mainAxisExtent: 240,
-              ),
-              itemBuilder: (BuildContext context, int index) {
-                if (index >= state.pictures.length) {
-                  return const _GridProgressItem();
-                } else {
-                  final picture = state.pictures[index];
-                  return _GridImageItem(picture: picture);
-                }
-              },
-              controller: _scrollController,
-            );
+    return BlocConsumer<PictureListBloc, PictureListState>(
+      listener: (context, state) {
+        if (state.status == PictureListStatus.error) {
+          _showErrorSnackBar(context);
         }
       },
+      builder: (context, state) {
+        if (state.pictures.isEmpty) {
+          if (state.status == PictureListStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('No pictures found'));
+          }
+        } else {
+          final itemCount = (state.status == PictureListStatus.loading
+              ? state.pictures.length + 1
+              : state.pictures.length);
+          return GridView.builder(
+            itemCount: itemCount,
+            padding: const EdgeInsets.all(8),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              mainAxisExtent: 240,
+            ),
+            itemBuilder: (BuildContext context, int index) {
+              if (index >= state.pictures.length) {
+                return const _GridProgressItem();
+              } else {
+                final picture = state.pictures[index];
+                return _GridImageItem(picture: picture);
+              }
+            },
+            controller: _scrollController,
+          );
+        }
+      },
+    );
+  }
+
+  void _showErrorSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(days: 99),
+        content: const Text('Error fetching pictures'),
+        action: SnackBarAction(
+          label: 'Retry',
+          onPressed: () {
+            context.read<PictureListBloc>().add(FetchPictures());
+          },
+        ),
+      ),
     );
   }
 

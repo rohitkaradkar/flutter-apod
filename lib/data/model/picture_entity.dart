@@ -30,4 +30,21 @@ class PictureEntity {
     required this.title,
     this.copyright,
   });
+
+  PictureEntity copyWith({
+    DateTime? date,
+    String? explanation,
+    String? hdImageUrl,
+    String? imageUrl,
+    String? title,
+    String? copyRight,
+  }) {
+    return PictureEntity(
+      date: date ?? this.date,
+      explanation: explanation ?? this.explanation,
+      hdImageUrl: hdImageUrl ?? this.hdImageUrl,
+      imageUrl: imageUrl ?? this.imageUrl,
+      title: title ?? this.title,
+    );
+  }
 }
