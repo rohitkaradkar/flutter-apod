@@ -95,5 +95,27 @@ void main() async {
       expect(changeCount, fakeEntities.length);
       subscription.cancel();
     });
+
+    test('entityDateRange returns null when no data is saved', () {
+      final range = pictureDao.getEntityDateRange();
+      expect(range, isNull);
+    });
+
+    test('entityDateRange returns latest and oldest dates', () async {
+      final latestItem = PictureEntity(
+        date: DateTime(2023, 8, 17),
+        explanation: '',
+        hdImageUrl: '',
+        imageUrl: '',
+        title: '',
+      );
+      final middleItem = latestItem.copyWith(date: DateTime(2023, 1, 1));
+      final oldestItem = latestItem.copyWith(date: DateTime(2021, 1, 1));
+
+      await pictureDao.save([latestItem, oldestItem, middleItem]);
+      final range = pictureDao.getEntityDateRange()!;
+      expect(range.latest, latestItem.date);
+      expect(range.oldest, oldestItem.date);
+    });
   });
 }
