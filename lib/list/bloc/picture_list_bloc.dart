@@ -38,9 +38,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     Emitter<PictureListState> emit,
   ) async {
     try {
-      final newPageIndex = state.pageIndex + 1;
-      await repository.fetchPictures(newPageIndex);
-      emit(state.copyWith(pageIndex: newPageIndex));
+      await repository.fetchNextPage();
     } catch (e, stacktrace) {
       print(e);
       print(stacktrace);

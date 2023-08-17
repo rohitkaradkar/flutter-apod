@@ -37,8 +37,13 @@ class PictureRepository {
     return entities.toList()..sort((a, b) => b.date.compareTo(a.date));
   }
 
-  Future<void> fetchPictures(int pageIndex) async {
-    final pageData = pager.getPageData(pageIndex);
+  Future<void> fetchNextPage() async {
+    final localDateRange = pictureDao.getEntityDateRange();
+    final pageData = pager.getNextPage(
+      latestEntityDate: localDateRange?.latest,
+      oldestEntityDate: localDateRange?.oldest,
+    );
+
     final queryParams = {
       'api_key': kNasaApiKey,
       'start_date': pageData.startDate,
