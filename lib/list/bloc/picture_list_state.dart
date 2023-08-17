@@ -1,14 +1,14 @@
 import 'package:apod/list/model/picture_item.dart';
 import 'package:equatable/equatable.dart';
 
-enum PictureListStatus { loading, success, error, none }
+enum PictureListStatus { loading, success, error }
 
 final class PictureListState extends Equatable {
   final PictureListStatus status;
   final List<PictureItem> pictures;
 
   const PictureListState({
-    this.status = PictureListStatus.none,
+    this.status = PictureListStatus.loading,
     this.pictures = const <PictureItem>[],
   });
 

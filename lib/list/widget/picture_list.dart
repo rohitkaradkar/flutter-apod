@@ -32,7 +32,12 @@ class _PictureListState extends State<PictureList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PictureListBloc, PictureListState>(
+    return BlocConsumer<PictureListBloc, PictureListState>(
+      listener: (context, state) {
+        if (state.status == PictureListStatus.error) {
+          _showErrorSnackBar(context);
+        }
+      },
       builder: (context, state) {
         if (state.pictures.isEmpty) {
           if (state.status == PictureListStatus.loading) {
@@ -41,8 +46,11 @@ class _PictureListState extends State<PictureList> {
             return const Center(child: Text('No pictures found'));
           }
         } else {
+          final itemCount = (state.status == PictureListStatus.loading
+              ? state.pictures.length + 1
+              : state.pictures.length);
           return GridView.builder(
-            itemCount: state.pictures.length + 1,
+            itemCount: itemCount,
             padding: const EdgeInsets.all(8),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -62,6 +70,21 @@ class _PictureListState extends State<PictureList> {
           );
         }
       },
+    );
+  }
+
+  void _showErrorSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(days: 99),
+        content: const Text('Error fetching pictures'),
+        action: SnackBarAction(
+          label: 'Retry',
+          onPressed: () {
+            context.read<PictureListBloc>().add(FetchPictures());
+          },
+        ),
+      ),
     );
   }
 
