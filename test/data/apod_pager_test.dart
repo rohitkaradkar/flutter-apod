@@ -31,4 +31,42 @@ void main() {
     final date2 = DateTime(2023, 12, 11);
     expect(date2.yyyyMMdd, '2023-12-11');
   });
+
+  test('nextPage returns latest dates when local entities are older', () {
+    final today = DateTime(2023, 8, 17);
+    final pager = ApodPager(pageSize: 5, today: today);
+
+    final page1 = pager.getNextPage(
+      latestEntityDate: DateTime(2023, 8, 10),
+      oldestEntityDate: DateTime(2023, 8, 1),
+    )!;
+    expect(page1.endDate, '2023-08-15');
+    expect(page1.startDate, '2023-08-11');
+
+    final page2 = pager.getNextPage(
+      latestEntityDate: DateTime(2023, 8, 15),
+      oldestEntityDate: DateTime(2023, 8, 1),
+    )!;
+    expect(page2.endDate, '2023-08-17');
+    expect(page2.startDate, '2023-08-16');
+  });
+
+  test('nextPage returns past dates from local entities', () {
+    final today = DateTime(2023, 8, 17);
+    final pager = ApodPager(pageSize: 5, today: today);
+
+    final page1 = pager.getNextPage(
+      latestEntityDate: today,
+      oldestEntityDate: DateTime(2023, 8, 1),
+    )!;
+    expect(page1.endDate, '2023-07-31');
+    expect(page1.startDate, '2023-07-27');
+
+    final page2 = pager.getNextPage(
+      latestEntityDate: today,
+      oldestEntityDate: DateTime(2023, 7, 27),
+    )!;
+    expect(page2.endDate, '2023-07-26');
+    expect(page2.startDate, '2023-07-22');
+  });
 }
