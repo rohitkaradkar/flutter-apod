@@ -11,10 +11,16 @@ class ApodPager {
     return ApodPageData(startDate: startDate, endDate: endDate);
   }
 
-  ApodPageData? getNextPage({
-    required DateTime latestEntityDate,
-    required DateTime oldestEntityDate,
+  ApodPageData getNextPage({
+    DateTime? latestEntityDate,
+    DateTime? oldestEntityDate,
   }) {
+    if (latestEntityDate == null || oldestEntityDate == null) {
+      final endDate = today;
+      final startDate = today.subtract(Duration(days: pageSize - 1));
+      return ApodPageData(startDate: startDate, endDate: endDate);
+    }
+
     latestEntityDate = latestEntityDate.withoutTime();
     oldestEntityDate = oldestEntityDate.withoutTime();
     if (latestEntityDate.isBefore(today)) {

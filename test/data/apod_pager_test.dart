@@ -58,15 +58,24 @@ void main() {
     final page1 = pager.getNextPage(
       latestEntityDate: today,
       oldestEntityDate: DateTime(2023, 8, 1),
-    )!;
+    );
     expect(page1.endDate, '2023-07-31');
     expect(page1.startDate, '2023-07-27');
 
     final page2 = pager.getNextPage(
       latestEntityDate: today,
       oldestEntityDate: DateTime(2023, 7, 27),
-    )!;
+    );
     expect(page2.endDate, '2023-07-26');
     expect(page2.startDate, '2023-07-22');
+  });
+
+  test('nextPage output when date range is not provided', () {
+    final today = DateTime(2023, 8, 17);
+    final pager = ApodPager(pageSize: 5, today: today);
+
+    final page1 = pager.getNextPage();
+    expect(page1.endDate, '2023-08-17');
+    expect(page1.startDate, '2023-08-13');
   });
 }
