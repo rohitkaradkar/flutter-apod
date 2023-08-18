@@ -52,7 +52,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   FutureOr<void> _onPicturesLoaded(
       PicturesLoaded event, Emitter<PictureListState> emit) {
     final items = event.entities
-        .map((e) => PictureItem(title: e.title, url: e.imageUrl))
+        .map((e) => PictureItem(date: e.date, title: e.title, url: e.imageUrl))
         .toList(growable: false);
     emit(state.copyWith(pictures: items));
 

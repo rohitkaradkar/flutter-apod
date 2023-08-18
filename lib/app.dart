@@ -27,7 +27,11 @@ final _router = GoRouter(
       routes: [
         GoRoute(
           path: 'details',
-          builder: (context, state) => const PictureDetailsPage(),
+          builder: (context, state) {
+            return PictureDetailsPage(
+              selectedItemDate: state.uri.queryParameters['date']!,
+            );
+          },
         ),
       ],
     ),

@@ -8,14 +8,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class PictureDetailsPage extends StatelessWidget {
-  const PictureDetailsPage({super.key});
+  final String selectedItemDate;
+
+  const PictureDetailsPage({super.key, required this.selectedItemDate});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => PictureDetailsBloc(
         repository: PictureRepository(pageSize: kApiPageSize),
-      )..add(InitialisePictureDetails()),
+      )..add(InitialisePictureDetails(selectedItemDate: selectedItemDate)),
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(

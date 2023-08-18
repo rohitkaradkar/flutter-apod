@@ -5,10 +5,12 @@ enum PictureDetailsStatus { loading, success, error }
 class PictureDetailsState extends Equatable {
   final PictureDetailsStatus status;
   final List<PictureDetailItem> pictures;
+  final int? selectedPictureIndex;
 
   const PictureDetailsState({
     this.status = PictureDetailsStatus.loading,
     this.pictures = const <PictureDetailItem>[],
+    this.selectedPictureIndex,
   });
 
   @override

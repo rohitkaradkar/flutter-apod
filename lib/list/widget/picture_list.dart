@@ -67,7 +67,11 @@ class _PictureListState extends State<PictureList> {
                 return _GridImageItem(
                   picture: picture,
                   onTap: () {
-                    GoRouter.of(context).go('/details');
+                    final path = Uri(
+                      path: '/details',
+                      queryParameters: {'date': picture.date.toString()},
+                    ).toString();
+                    GoRouter.of(context).go(path);
                   },
                 );
               }
