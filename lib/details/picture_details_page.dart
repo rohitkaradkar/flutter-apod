@@ -19,6 +19,7 @@ class PictureDetailsPage extends StatelessWidget {
         repository: PictureRepository(pageSize: kApiPageSize),
       )..add(InitialisePictureDetails(selectedItemDate: selectedItemDate)),
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.close_rounded),
@@ -31,10 +32,23 @@ class PictureDetailsPage extends StatelessWidget {
   }
 }
 
-class PictureDetails extends StatelessWidget {
+class PictureDetails extends StatefulWidget {
   const PictureDetails({
     super.key,
   });
+
+  @override
+  State<PictureDetails> createState() => _PictureDetailsState();
+}
+
+class _PictureDetailsState extends State<PictureDetails> {
+  PageController? _pageController;
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +64,19 @@ class PictureDetails extends StatelessWidget {
             return const Center(child: Text('No pictures found'));
           }
         }
-        return PageView.builder(itemBuilder: (context, index) {
-          final picture = state.pictures[index];
-          // container with width of screen
-          return _imagePage(picture);
-        });
+        final initialPageIndex = state.selectedPictureIndex;
+        if (initialPageIndex >= 0) {
+          _pageController = PageController(initialPage: initialPageIndex);
+        }
+        return PageView.builder(
+          itemCount: state.pictures.length,
+          controller: _pageController,
+          itemBuilder: (context, index) {
+            final picture = state.pictures[index];
+            // container with width of screen
+            return _imagePage(picture);
+          },
+        );
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/details/model/picture_detail_item.dart';
@@ -33,6 +34,12 @@ class PictureDetailsBloc
     InitialisePictureDetails event,
     Emitter<PictureDetailsState> emit,
   ) {
+    if (event.selectedItemDate != null) {
+      final date = DateTime.tryParse(event.selectedItemDate ?? '');
+      if (date != null) {
+        emit(state.copyWith(selectedPictureDate: date.withoutTime()));
+      }
+    }
     _entityStream = repository.getEntities().listen((entities) {
       if (entities.isEmpty) return;
       add(PicturesEntitiesLoaded(entities: entities));

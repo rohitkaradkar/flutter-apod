@@ -9,6 +9,7 @@ class ApodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: _router,
       title: 'APOD',
       theme: ThemeData(
