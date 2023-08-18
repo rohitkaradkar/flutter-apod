@@ -8,7 +8,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 part 'picture_details_event.dart';
-
 part 'picture_details_state.dart';
 
 class PictureDetailsBloc
@@ -21,6 +20,7 @@ class PictureDetailsBloc
   }) : super(const PictureDetailsState()) {
     on<InitialisePictureDetails>(_onInitPictureDetails);
     on<PicturesEntitiesLoaded>(_onPicturesEntitiesLoaded);
+    on<FetchPictures>(_onFetchPictures);
   }
 
   @override
@@ -47,5 +47,14 @@ class PictureDetailsBloc
         .map((e) => mapToPictureDetailEntity(e))
         .toList(growable: false);
     emit(state.copyWith(pictures: items, status: PictureDetailsStatus.success));
+  }
+
+  Future<FutureOr<void>> _onFetchPictures(
+    FetchPictures event,
+    Emitter<PictureDetailsState> emit,
+  ) async {
+    emit(state.copyWith(status: PictureDetailsStatus.loading));
+    await repository.fetchNextPage();
+    emit(state.copyWith(status: PictureDetailsStatus.success));
   }
 }

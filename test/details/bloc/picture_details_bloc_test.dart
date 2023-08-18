@@ -61,11 +61,14 @@ void main() {
       ],
     );
 
-    // blocTest<PictureDetailsBloc, PictureDetailsState>(
-    //   'FetchPictures starts with loading then success',
-    //   build: () => bloc,
-    //   act: (bloc)=> bloc.add(FetchPictures()),
-    //   expect: () => <PictureDetailsState>[],
-    // );
+    blocTest<PictureDetailsBloc, PictureDetailsState>(
+      'FetchPictures starts with loading then success',
+      build: () => bloc,
+      act: (bloc) => bloc.add(FetchPictures()),
+      expect: () => <PictureDetailsState>[
+        const PictureDetailsState(status: PictureDetailsStatus.loading),
+        const PictureDetailsState(status: PictureDetailsStatus.success),
+      ],
+    );
   });
 }
