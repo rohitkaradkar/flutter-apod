@@ -53,8 +53,14 @@ class PictureDetailsBloc
     FetchPictures event,
     Emitter<PictureDetailsState> emit,
   ) async {
-    emit(state.copyWith(status: PictureDetailsStatus.loading));
-    await repository.fetchNextPage();
-    emit(state.copyWith(status: PictureDetailsStatus.success));
+    try {
+      emit(state.copyWith(status: PictureDetailsStatus.loading));
+      await repository.fetchNextPage();
+      emit(state.copyWith(status: PictureDetailsStatus.success));
+    } catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
+      emit(state.copyWith(status: PictureDetailsStatus.error));
+    }
   }
 }

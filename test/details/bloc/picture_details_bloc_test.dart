@@ -70,5 +70,18 @@ void main() {
         const PictureDetailsState(status: PictureDetailsStatus.success),
       ],
     );
+
+    blocTest<PictureDetailsBloc, PictureDetailsState>(
+      'FetchPictures starts with loading then error',
+      setUp: () {
+        when(repository.fetchNextPage()).thenThrow(Exception());
+      },
+      build: () => bloc,
+      act: (bloc) => bloc.add(FetchPictures()),
+      expect: () => <PictureDetailsState>[
+        const PictureDetailsState(status: PictureDetailsStatus.loading),
+        const PictureDetailsState(status: PictureDetailsStatus.error),
+      ],
+    );
   });
 }
