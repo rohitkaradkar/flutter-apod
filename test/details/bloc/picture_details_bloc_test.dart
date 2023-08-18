@@ -62,6 +62,18 @@ void main() {
     );
 
     blocTest<PictureDetailsBloc, PictureDetailsState>(
+      'InitialisePictureDetails event should not load entities when empty',
+      setUp: () {
+        when(repository.getEntities()).thenAnswer(
+          (_) => Stream.value([]),
+        );
+      },
+      build: () => bloc,
+      act: (bloc) => bloc.add(InitialisePictureDetails()),
+      expect: () => <PictureDetailsState>[],
+    );
+
+    blocTest<PictureDetailsBloc, PictureDetailsState>(
       'FetchPictures starts with loading then success',
       build: () => bloc,
       act: (bloc) => bloc.add(FetchPictures()),
