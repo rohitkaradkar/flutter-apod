@@ -5,6 +5,7 @@ import 'package:apod/list/model/picture_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class PictureList extends StatefulWidget {
   const PictureList({super.key});
@@ -63,7 +64,16 @@ class _PictureListState extends State<PictureList> {
                 return const _GridProgressItem();
               } else {
                 final picture = state.pictures[index];
-                return _GridImageItem(picture: picture);
+                return _GridImageItem(
+                  picture: picture,
+                  onTap: () {
+                    final path = Uri(
+                      path: '/details',
+                      queryParameters: {'date': picture.date.toString()},
+                    ).toString();
+                    GoRouter.of(context).go(path);
+                  },
+                );
               }
             },
             controller: _scrollController,
@@ -106,37 +116,42 @@ class _GridImageItem extends StatelessWidget {
   const _GridImageItem({
     super.key,
     required this.picture,
+    this.onTap,
   });
 
   final PictureItem picture;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: [
-          Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: picture.url,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const Icon(Icons.image_outlined),
-              errorWidget: (context, url, error) =>
-                  const Icon(Icons.broken_image_outlined),
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomStart,
+          children: [
+            Positioned.fill(
+              child: CachedNetworkImage(
+                imageUrl: picture.url,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Icon(Icons.image_outlined),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image_outlined),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              picture.title,
-              style: const TextStyle(color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                picture.title,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
