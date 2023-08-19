@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_event.dart';
@@ -51,9 +52,13 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   FutureOr<void> _onPicturesLoaded(
       PicturesLoaded event, Emitter<PictureListState> emit) {
     final items = event.entities
-        .map((e) => PictureItem(title: e.title, url: e.imageUrl))
+        .map((e) => PictureItem(date: e.date, title: e.title, url: e.imageUrl))
         .toList(growable: false);
     emit(state.copyWith(pictures: items));
+
+    if (!containsFirstApodEntry(event.entities)) {
+      add(FetchPictures());
+    }
   }
 
   FutureOr<void> _onInitialise(
@@ -70,6 +75,10 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         }
       },
     );
+  }
+
+  bool containsFirstApodEntry(List<PictureEntity> entities) {
+    return entities.first.date == DateTime.now().withoutTime();
   }
 
   @override
