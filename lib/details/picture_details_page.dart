@@ -26,22 +26,22 @@ class PictureDetailsPage extends StatelessWidget {
             onPressed: () => GoRouter.of(context).pop(),
           ),
         ),
-        body: PictureDetails(),
+        body: const PictureDetailsPageView(),
       ),
     );
   }
 }
 
-class PictureDetails extends StatefulWidget {
-  const PictureDetails({
+class PictureDetailsPageView extends StatefulWidget {
+  const PictureDetailsPageView({
     super.key,
   });
 
   @override
-  State<PictureDetails> createState() => _PictureDetailsState();
+  State<PictureDetailsPageView> createState() => _PictureDetailsPageViewState();
 }
 
-class _PictureDetailsState extends State<PictureDetails> {
+class _PictureDetailsPageViewState extends State<PictureDetailsPageView> {
   PageController? _pageController;
 
   @override
