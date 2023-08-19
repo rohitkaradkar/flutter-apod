@@ -1,5 +1,6 @@
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/details/bloc/picture_details_bloc.dart';
+import 'package:apod/details/widget/picture_details_bottom_sheet.dart';
 import 'package:apod/details/widget/picture_details_page_view.dart';
 import 'package:apod/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,9 @@ class PictureDetailsPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => PictureDetailsBloc(
         repository: PictureRepository(pageSize: kApiPageSize),
-      )..add(InitialisePictureDetails(selectedItemDate: selectedItemDate)),
+      )..add(InitialisePictureDetails(defaultItemDate: selectedItemDate)),
       child: Scaffold(
-        extendBodyBehindAppBar: true,
+        extendBodyBehindAppBar: false,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.close_rounded),
@@ -26,6 +27,7 @@ class PictureDetailsPage extends StatelessWidget {
           ),
         ),
         body: const PictureDetailsPageView(),
+        bottomSheet: const PictureDetailsBottomSheet(),
       ),
     );
   }

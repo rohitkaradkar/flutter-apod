@@ -43,6 +43,11 @@ class _PictureDetailsPageViewState extends State<PictureDetailsPageView> {
         return PageView.builder(
           itemCount: state.pictures.length,
           controller: _pageController,
+          onPageChanged: (index) {
+            context
+                .read<PictureDetailsBloc>()
+                .add(SelectedPictureChanged(index));
+          },
           itemBuilder: (context, index) {
             final picture = state.pictures[index];
             // container with width of screen

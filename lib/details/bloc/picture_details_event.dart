@@ -3,12 +3,12 @@ part of 'picture_details_bloc.dart';
 sealed class PictureDetailsEvent {}
 
 class InitialisePictureDetails extends PictureDetailsEvent with EquatableMixin {
-  String? selectedItemDate;
+  String defaultItemDate;
 
-  InitialisePictureDetails({this.selectedItemDate});
+  InitialisePictureDetails({required this.defaultItemDate});
 
   @override
-  List<Object?> get props => [selectedItemDate];
+  List<Object?> get props => [defaultItemDate];
 }
 
 class PicturesEntitiesLoaded extends PictureDetailsEvent with EquatableMixin {
@@ -23,3 +23,12 @@ class PicturesEntitiesLoaded extends PictureDetailsEvent with EquatableMixin {
 }
 
 class FetchPictures extends PictureDetailsEvent {}
+
+class SelectedPictureChanged extends PictureDetailsEvent with EquatableMixin {
+  final int index;
+
+  SelectedPictureChanged(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/details/model/picture_detail_item.dart';
@@ -19,9 +18,14 @@ class PictureDetailsBloc
   PictureDetailsBloc({
     required this.repository,
   }) : super(const PictureDetailsState()) {
+    _entityStream = repository.getEntities().listen((entities) {
+      if (entities.isEmpty) return;
+      add(PicturesEntitiesLoaded(entities: entities));
+    });
     on<InitialisePictureDetails>(_onInitPictureDetails);
     on<PicturesEntitiesLoaded>(_onPicturesEntitiesLoaded);
     on<FetchPictures>(_onFetchPictures);
+    on<SelectedPictureChanged>(_onSelectedPictureChanged);
   }
 
   @override
@@ -30,20 +34,19 @@ class PictureDetailsBloc
     return super.close();
   }
 
-  FutureOr<void> _onInitPictureDetails(
+  Future<FutureOr<void>> _onInitPictureDetails(
     InitialisePictureDetails event,
     Emitter<PictureDetailsState> emit,
-  ) {
-    if (event.selectedItemDate != null) {
-      final date = DateTime.tryParse(event.selectedItemDate ?? '');
-      if (date != null) {
-        emit(state.copyWith(selectedPictureDate: date.withoutTime()));
-      }
+  ) async {
+    final date = DateTime.tryParse(event.defaultItemDate);
+    if (date != null) {
+      // get entities from stream
+      final entities = await repository.getEntities().first;
+      final index = entities.indexWhere((element) => element.date == date);
+      emit(
+        state.copyWith(selectedPictureIndex: index.clamp(0, entities.length)),
+      );
     }
-    _entityStream = repository.getEntities().listen((entities) {
-      if (entities.isEmpty) return;
-      add(PicturesEntitiesLoaded(entities: entities));
-    });
   }
 
   FutureOr<void> _onPicturesEntitiesLoaded(
@@ -69,5 +72,12 @@ class PictureDetailsBloc
       print(stacktrace);
       emit(state.copyWith(status: PictureDetailsStatus.error));
     }
+  }
+
+  FutureOr<void> _onSelectedPictureChanged(
+    SelectedPictureChanged event,
+    Emitter<PictureDetailsState> emit,
+  ) {
+    emit(state.copyWith(selectedPictureIndex: event.index));
   }
 }
