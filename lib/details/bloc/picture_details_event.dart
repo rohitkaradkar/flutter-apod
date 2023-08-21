@@ -5,6 +5,7 @@ sealed class PictureDetailsEvent {}
 class InitialisePictureDetails extends PictureDetailsEvent with EquatableMixin {
   String defaultItemDate;
 
+  // String date in format of yyyy-MM-dd
   InitialisePictureDetails({required this.defaultItemDate});
 
   @override

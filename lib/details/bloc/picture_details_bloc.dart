@@ -39,12 +39,16 @@ class PictureDetailsBloc
     Emitter<PictureDetailsState> emit,
   ) async {
     final date = DateTime.tryParse(event.defaultItemDate);
-    if (date != null) {
+    final entities = await repository.getEntities().first;
+    if (entities.isNotEmpty) {
       // get entities from stream
-      final entities = await repository.getEntities().first;
       final index = entities.indexWhere((element) => element.date == date);
       emit(
-        state.copyWith(selectedPictureIndex: index.clamp(0, entities.length)),
+        state.copyWith(
+          selectedPictureIndex: index.clamp(0, entities.length),
+          pictures: entities.map(mapToPictureDetailEntity).toList(),
+          status: PictureDetailsStatus.success,
+        ),
       );
     }
   }
