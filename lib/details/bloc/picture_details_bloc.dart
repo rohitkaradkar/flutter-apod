@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
 
-import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/details/model/picture_detail_item.dart';
@@ -14,7 +14,6 @@ part 'picture_details_state.dart';
 class PictureDetailsBloc
     extends Bloc<PictureDetailsEvent, PictureDetailsState> {
   final PictureRepository repository;
-  StreamSubscription<List<PictureEntity>>? _entityStream;
 
   PictureDetailsBloc({
     required this.repository,
@@ -22,28 +21,26 @@ class PictureDetailsBloc
     on<InitialisePictureDetails>(_onInitPictureDetails);
     on<PicturesEntitiesLoaded>(_onPicturesEntitiesLoaded);
     on<FetchPictures>(_onFetchPictures);
+    on<SelectedPictureChanged>(_onSelectedPictureChanged);
   }
 
-  @override
-  Future<void> close() {
-    _entityStream?.cancel();
-    return super.close();
-  }
-
-  FutureOr<void> _onInitPictureDetails(
+  Future<FutureOr<void>> _onInitPictureDetails(
     InitialisePictureDetails event,
     Emitter<PictureDetailsState> emit,
-  ) {
-    if (event.selectedItemDate != null) {
-      final date = DateTime.tryParse(event.selectedItemDate ?? '');
-      if (date != null) {
-        emit(state.copyWith(selectedPictureDate: date.withoutTime()));
-      }
+  ) async {
+    final date = DateTime.tryParse(event.defaultItemDate);
+    final entities = await repository.getEntities().first;
+    if (entities.isNotEmpty) {
+      // get entities from stream
+      final index = entities.indexWhere((element) => element.date == date);
+      emit(
+        state.copyWith(
+          selectedPictureIndex: index.clamp(0, entities.length),
+          pictures: entities.map(mapToPictureDetailEntity).toList(),
+          status: PictureDetailsStatus.success,
+        ),
+      );
     }
-    _entityStream = repository.getEntities().listen((entities) {
-      if (entities.isEmpty) return;
-      add(PicturesEntitiesLoaded(entities: entities));
-    });
   }
 
   FutureOr<void> _onPicturesEntitiesLoaded(
@@ -65,9 +62,15 @@ class PictureDetailsBloc
       await repository.fetchNextPage();
       emit(state.copyWith(status: PictureDetailsStatus.success));
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      log('error fetching next page', error: e, stackTrace: stacktrace);
       emit(state.copyWith(status: PictureDetailsStatus.error));
     }
+  }
+
+  FutureOr<void> _onSelectedPictureChanged(
+    SelectedPictureChanged event,
+    Emitter<PictureDetailsState> emit,
+  ) {
+    emit(state.copyWith(selectedPictureIndex: event.index));
   }
 }
