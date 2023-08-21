@@ -45,9 +45,10 @@ void main() {
       bloc = PictureDetailsBloc(repository: repository);
     });
 
-    test('initial state is empty with loading status', () {
+    test('initial state', () {
       expect(bloc.state.status, PictureDetailsStatus.loading);
       expect(bloc.state.pictures, isEmpty);
+      expect(bloc.state.selectedPictureIndex, 0);
     });
 
     group('InitialisePictureDetails event', () {

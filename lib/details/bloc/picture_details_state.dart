@@ -14,7 +14,9 @@ class PictureDetailsState extends Equatable {
   });
 
   PictureDetailItem? get selectedPicture {
-    if (selectedPictureIndex < 0 || selectedPictureIndex >= pictures.length) {
+    if (pictures.isEmpty ||
+        selectedPictureIndex < 0 ||
+        selectedPictureIndex >= pictures.length) {
       return null;
     }
     return pictures[selectedPictureIndex];

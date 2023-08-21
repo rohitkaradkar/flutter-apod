@@ -14,25 +14,14 @@ part 'picture_details_state.dart';
 class PictureDetailsBloc
     extends Bloc<PictureDetailsEvent, PictureDetailsState> {
   final PictureRepository repository;
-  StreamSubscription<List<PictureEntity>>? _entityStream;
 
   PictureDetailsBloc({
     required this.repository,
   }) : super(const PictureDetailsState()) {
-    _entityStream = repository.getEntities().listen((entities) {
-      if (entities.isEmpty) return;
-      add(PicturesEntitiesLoaded(entities: entities));
-    });
     on<InitialisePictureDetails>(_onInitPictureDetails);
     on<PicturesEntitiesLoaded>(_onPicturesEntitiesLoaded);
     on<FetchPictures>(_onFetchPictures);
     on<SelectedPictureChanged>(_onSelectedPictureChanged);
-  }
-
-  @override
-  Future<void> close() {
-    _entityStream?.cancel();
-    return super.close();
   }
 
   Future<FutureOr<void>> _onInitPictureDetails(
