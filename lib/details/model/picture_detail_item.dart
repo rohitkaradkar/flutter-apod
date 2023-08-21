@@ -15,6 +15,8 @@ class PictureDetailItem extends Equatable {
     this.copyright,
   });
 
+  String get formattedDate => '${date.day}-${date.month}-${date.year}';
+
   @override
   List<Object?> get props => [date, explanation, imageUrl, title, copyright];
 }

@@ -5,31 +5,35 @@ enum PictureDetailsStatus { loading, success, error }
 class PictureDetailsState extends Equatable {
   final PictureDetailsStatus status;
   final List<PictureDetailItem> pictures;
-  final DateTime? selectedPictureDate;
+  final int selectedPictureIndex;
 
   const PictureDetailsState({
-    this.selectedPictureDate,
     this.status = PictureDetailsStatus.loading,
     this.pictures = const <PictureDetailItem>[],
+    this.selectedPictureIndex = 0,
   });
 
-  int get selectedPictureIndex {
-    return pictures
-        .indexWhere((element) => element.date == selectedPictureDate);
+  PictureDetailItem? get selectedPicture {
+    if (pictures.isEmpty ||
+        selectedPictureIndex < 0 ||
+        selectedPictureIndex >= pictures.length) {
+      return null;
+    }
+    return pictures[selectedPictureIndex];
   }
 
   @override
-  List<Object?> get props => [status, pictures, selectedPictureDate];
+  List<Object?> get props => [status, pictures, selectedPictureIndex];
 
-  PictureDetailsState copyWith({
+  copyWith({
     PictureDetailsStatus? status,
     List<PictureDetailItem>? pictures,
-    DateTime? selectedPictureDate,
+    int? selectedPictureIndex,
   }) {
     return PictureDetailsState(
       status: status ?? this.status,
       pictures: pictures ?? this.pictures,
-      selectedPictureDate: selectedPictureDate ?? this.selectedPictureDate,
+      selectedPictureIndex: selectedPictureIndex ?? this.selectedPictureIndex,
     );
   }
 }
