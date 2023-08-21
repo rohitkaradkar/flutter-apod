@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
@@ -50,7 +51,7 @@ class PictureRepository {
       'end_date': pageData.endDate,
     };
     final uri = Uri.http(kNasaBaseURL, '/planetary/apod', queryParams);
-    print('fetching $uri');
+    log('fetching $uri');
     final response = await httpClient.get(uri);
 
     if (response.statusCode == 200) {
@@ -61,7 +62,7 @@ class PictureRepository {
       final entities = responses.map(_mapResponseToEntity).toList();
       await pictureDao.save(entities);
     } else {
-      print('error in api $uri');
+      log('error in api $uri', error: response.body);
       throw Exception(response.body);
     }
   }

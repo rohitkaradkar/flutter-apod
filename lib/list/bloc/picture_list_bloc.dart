@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
@@ -43,8 +44,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
       await repository.fetchNextPage();
       emit(state.copyWith(status: PictureListStatus.success));
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      log('error fetching next page', error: e, stackTrace: stacktrace);
       emit(state.copyWith(status: PictureListStatus.error));
     }
   }

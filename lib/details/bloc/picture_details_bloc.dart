@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
@@ -72,8 +73,7 @@ class PictureDetailsBloc
       await repository.fetchNextPage();
       emit(state.copyWith(status: PictureDetailsStatus.success));
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      log('error fetching next page', error: e, stackTrace: stacktrace);
       emit(state.copyWith(status: PictureDetailsStatus.error));
     }
   }
