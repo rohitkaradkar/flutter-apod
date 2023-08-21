@@ -19,6 +19,10 @@ class _PictureDetailsBottomSheetState extends State<PictureDetailsBottomSheet> {
         if (picture == null) {
           return const Center(child: CircularProgressIndicator());
         }
+        String subtitle = _formattedDate(picture.date);
+        if (picture.copyright != null) {
+          subtitle += ' ${picture.copyright}';
+        }
         return DraggableScrollableSheet(
           expand: false,
           snap: true,
@@ -31,7 +35,7 @@ class _PictureDetailsBottomSheetState extends State<PictureDetailsBottomSheet> {
               ),
               const SizedBox(height: 8),
               Text(
-                '${picture.copyright} ${picture.formattedDate}',
+                subtitle,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 8),
@@ -51,5 +55,9 @@ class _PictureDetailsBottomSheetState extends State<PictureDetailsBottomSheet> {
         );
       },
     );
+  }
+
+  String _formattedDate(DateTime date) {
+    return '${date.day}-${date.month}-${date.year}';
   }
 }
