@@ -1,6 +1,5 @@
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/bloc/picture_list_bloc.dart';
-import 'package:apod/list/bloc/picture_list_event.dart';
 import 'package:apod/list/widget/picture_list.dart';
 import 'package:apod/utils/constants.dart';
 import 'package:flutter/material.dart';
