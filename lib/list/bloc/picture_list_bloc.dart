@@ -72,9 +72,9 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
       add(FetchPictures());
     } else {
       add(PicturesLoaded(entities));
-      // if (!_containsFirstApodEntry(entities)) {
-      //   add(FetchPictures());
-      // }
+      if (!_containsFirstApodEntry(entities)) {
+        add(FetchPictures());
+      }
     }
     // _entityStream?.cancel();
     // _entityStream = repository.getEntities().debounce(_debounceTime).listen(

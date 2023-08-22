@@ -49,8 +49,8 @@ void main() {
     });
 
     group('InitialisePictureList event', () {
-      blocTest<PictureListBloc, PictureListState>(
-        'emits local picture items when present',
+      blocTest(
+        'emits local picture items while fetching new apod entries',
         setUp: () {
           when(repository.getEntities()).thenAnswer(
             (_) => Stream.value(fakeEntities),
@@ -59,12 +59,20 @@ void main() {
         build: () => bloc,
         act: (bloc) => bloc.add(InitialisePictureList()),
         wait: Duration.zero,
-        expect: () => [
-          PictureListState(
+        expect: () {
+          final state = PictureListState(
             status: PictureListStatus.success,
             pictures: fakeItems,
-          ),
-        ],
+          );
+          return [
+            state,
+            state.copyWith(status: PictureListStatus.loading),
+            state.copyWith(status: PictureListStatus.success),
+          ];
+        },
+        verify: (_) {
+          verify(repository.fetchNextPage()).called(1);
+        },
       );
     });
 
@@ -80,5 +88,7 @@ void main() {
         verify(repository.fetchNextPage()).called(1);
       },
     );
+
+    blocTest('', build: () => bloc);
   });
 }
