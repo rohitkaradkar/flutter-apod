@@ -32,7 +32,7 @@ void main() {
       ),
     ];
     final List<PictureDetailItem> fakePictureDetailItems =
-        fakeEntities.map(mapToPictureDetailEntity).toList();
+        fakeEntities.map(mapPictureEntityToDetailItem).toList();
 
     late PictureDetailsBloc bloc;
     late PictureRepository repository;

@@ -5,12 +5,12 @@ import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/model/picture_item.dart';
+import 'package:apod/utils/mappers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 part 'picture_list_event.dart';
-
 part 'picture_list_state.dart';
 
 const _debounceTime = Duration(milliseconds: 300);
@@ -55,7 +55,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   FutureOr<void> _onPicturesLoaded(
       PicturesLoaded event, Emitter<PictureListState> emit) {
     final items = event.entities
-        .map((e) => PictureItem(date: e.date, title: e.title, url: e.imageUrl))
+        .map((e) => mapPictureEntityToItem(e))
         .toList(growable: false);
     emit(state.copyWith(pictures: items));
 
