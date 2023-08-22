@@ -74,72 +74,73 @@ void main() {
           verify(repository.fetchNextPage()).called(1);
         },
       );
+
+      blocTest(
+        'fetches new items when local entities are absent',
+        setUp: () {
+          when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
+        },
+        build: () => bloc,
+        act: (bloc) => bloc.add(InitialisePictureList()),
+        wait: Duration.zero,
+        verify: (_) {
+          verify(repository.fetchNextPage()).called(1);
+        },
+      );
+
+      blocTest(
+        'state is updated when new entities are added',
+        setUp: () {
+          when(repository.getEntities()).thenAnswer(
+            (_) => Stream.fromIterable([[], fakeEntities]),
+          );
+        },
+        build: () => bloc,
+        act: (bloc) => bloc.add(InitialisePictureList()),
+        wait: Duration.zero,
+        expect: () {
+          return [
+            const PictureListState(
+              status: PictureListStatus.loading,
+              pictures: [],
+            ),
+            const PictureListState(
+              status: PictureListStatus.success,
+              pictures: [],
+            ),
+            PictureListState(
+              status: PictureListStatus.success,
+              pictures: fakeItems,
+            ),
+          ];
+        },
+      );
+
+      blocTest(
+        'emits error state when fetching next page fails',
+        setUp: () {
+          when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
+          when(repository.fetchNextPage()).thenThrow(Exception());
+        },
+        build: () => bloc,
+        act: (bloc) => bloc.add(InitialisePictureList()),
+        wait: Duration.zero,
+        expect: () {
+          return [
+            const PictureListState(
+              status: PictureListStatus.loading,
+              pictures: [],
+            ),
+            const PictureListState(
+              status: PictureListStatus.error,
+              pictures: [],
+            ),
+          ];
+        },
+      );
     });
 
-    blocTest(
-      'fetches new items when local entities are absent',
-      setUp: () {
-        when(repository.getEntities()).thenAnswer(
-          (_) => Stream<List<PictureEntity>>.value([]),
-        );
-      },
-      build: () => bloc,
-      act: (bloc) => bloc.add(InitialisePictureList()),
-      wait: Duration.zero,
-      verify: (_) {
-        verify(repository.fetchNextPage()).called(1);
-      },
-    );
-
-    blocTest(
-      'state is updated when new entities are added',
-      setUp: () {
-        when(repository.getEntities()).thenAnswer(
-          (_) => Stream.fromIterable([[], fakeEntities]),
-        );
-      },
-      build: () => bloc,
-      act: (bloc) => bloc.add(InitialisePictureList()),
-      wait: Duration.zero,
-      expect: () {
-        return [
-          const PictureListState(
-            status: PictureListStatus.loading,
-            pictures: [],
-          ),
-          const PictureListState(
-            status: PictureListStatus.success,
-            pictures: [],
-          ),
-          PictureListState(
-            status: PictureListStatus.success,
-            pictures: fakeItems,
-          ),
-        ];
-      },
-    );
-
-    blocTest(
-      'emits error state when fetching next page fails',
-      setUp: () {
-        when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
-        when(repository.fetchNextPage()).thenThrow(Exception());
-      },
-      build: () => bloc,
-      act: (bloc) => bloc.add(InitialisePictureList()),
-      wait: Duration.zero,
-      expect: () {
-        return [
-          const PictureListState(
-            status: PictureListStatus.loading,
-            pictures: [],
-          ),
-          const PictureListState(
-            status: PictureListStatus.error,
-            pictures: [],
-          ),
-        ];
-      },
-    );
+    // Note: other events are not explicitly tested
+    // as they're implicitly tested by InitialisePictureList event
   });
 }
