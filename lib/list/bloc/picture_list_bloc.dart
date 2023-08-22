@@ -4,11 +4,14 @@ import 'dart:developer';
 import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
-import 'package:apod/list/bloc/picture_list_event.dart';
-import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:stream_transform/stream_transform.dart';
+
+part 'picture_list_event.dart';
+
+part 'picture_list_state.dart';
 
 const _debounceTime = Duration(milliseconds: 300);
 

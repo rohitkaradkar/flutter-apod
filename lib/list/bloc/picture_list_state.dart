@@ -1,5 +1,4 @@
-import 'package:apod/list/model/picture_item.dart';
-import 'package:equatable/equatable.dart';
+part of 'picture_list_bloc.dart';
 
 enum PictureListStatus { loading, success, error }
 
