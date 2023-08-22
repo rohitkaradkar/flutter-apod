@@ -60,10 +60,6 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         .map((e) => mapPictureEntityToItem(e))
         .toList(growable: false);
     emit(state.copyWith(pictures: items, status: PictureListStatus.success));
-
-    if (!_containsFirstApodEntry(event.entities)) {
-      add(FetchPictures());
-    }
   }
 
   Future<FutureOr<void>> _onInitialise(
@@ -76,6 +72,9 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
       add(FetchPictures());
     } else {
       add(PicturesLoaded(entities));
+      // if (!_containsFirstApodEntry(entities)) {
+      //   add(FetchPictures());
+      // }
     }
     // _entityStream?.cancel();
     // _entityStream = repository.getEntities().debounce(_debounceTime).listen(

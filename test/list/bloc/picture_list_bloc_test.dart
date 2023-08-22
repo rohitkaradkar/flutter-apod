@@ -57,10 +57,8 @@ void main() {
           );
         },
         build: () => bloc,
-        act: (bloc) async {
-          bloc.add(InitialisePictureList());
-          await bloc.stream.first;
-        },
+        act: (bloc) => bloc.add(InitialisePictureList()),
+        wait: Duration.zero,
         expect: () => [
           PictureListState(
             status: PictureListStatus.success,
@@ -69,5 +67,18 @@ void main() {
         ],
       );
     });
+
+    blocTest(
+      'fetches new items when local entities are absent',
+      setUp: () {
+        when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
+      },
+      build: () => bloc,
+      act: (bloc) => bloc.add(InitialisePictureList()),
+      wait: Duration.zero,
+      verify: (_) {
+        verify(repository.fetchNextPage()).called(1);
+      },
+    );
   });
 }
