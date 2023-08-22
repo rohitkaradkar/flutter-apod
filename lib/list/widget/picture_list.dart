@@ -1,6 +1,4 @@
 import 'package:apod/list/bloc/picture_list_bloc.dart';
-import 'package:apod/list/bloc/picture_list_event.dart';
-import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

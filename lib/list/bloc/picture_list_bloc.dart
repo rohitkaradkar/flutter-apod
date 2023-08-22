@@ -4,13 +4,14 @@ import 'dart:developer';
 import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
-import 'package:apod/list/bloc/picture_list_event.dart';
-import 'package:apod/list/bloc/picture_list_state.dart';
 import 'package:apod/list/model/picture_item.dart';
+import 'package:apod/utils/mappers.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-const _debounceTime = Duration(milliseconds: 300);
+part 'picture_list_event.dart';
+part 'picture_list_state.dart';
 
 EventTransformer<E> debounce<E>(Duration duration) {
   return (events, mapper) {
@@ -20,10 +21,14 @@ EventTransformer<E> debounce<E>(Duration duration) {
 
 class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   final PictureRepository repository;
+  final Duration _debounceTime;
   StreamSubscription<List<PictureEntity>>? _entityStream;
 
-  PictureListBloc({required this.repository})
-      : super(const PictureListState()) {
+  PictureListBloc({
+    required this.repository,
+    Duration? debounceTime,
+  })  : _debounceTime = debounceTime ?? const Duration(milliseconds: 300),
+        super(const PictureListState()) {
     on<InitialisePictureList>(_onInitialise);
     on<FetchPictures>(
       _onFetchPictures,
@@ -52,32 +57,34 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
   FutureOr<void> _onPicturesLoaded(
       PicturesLoaded event, Emitter<PictureListState> emit) {
     final items = event.entities
-        .map((e) => PictureItem(date: e.date, title: e.title, url: e.imageUrl))
+        .map((e) => mapPictureEntityToItem(e))
         .toList(growable: false);
-    emit(state.copyWith(pictures: items));
-
-    if (!containsFirstApodEntry(event.entities)) {
-      add(FetchPictures());
-    }
+    emit(state.copyWith(pictures: items, status: PictureListStatus.success));
   }
 
-  FutureOr<void> _onInitialise(
+  Future<FutureOr<void>> _onInitialise(
     InitialisePictureList event,
     Emitter<PictureListState> emit,
-  ) {
+  ) async {
+    final stream = repository.getEntities().asBroadcastStream();
+    final entities = await stream.first;
+    if (entities.isEmpty) {
+      add(FetchPictures());
+    } else {
+      add(PicturesLoaded(entities));
+      if (!_containsFirstApodEntry(entities)) {
+        add(FetchPictures());
+      }
+    }
     _entityStream?.cancel();
-    _entityStream = repository.getEntities().debounce(_debounceTime).listen(
-      (entities) {
-        if (entities.isEmpty && state.status != PictureListStatus.error) {
-          add(FetchPictures());
-        } else if (entities.isNotEmpty) {
-          add(PicturesLoaded(entities));
-        }
-      },
-    );
+    _entityStream = stream.listen((entities) {
+      if (entities.isNotEmpty) {
+        add(PicturesLoaded(entities));
+      }
+    });
   }
 
-  bool containsFirstApodEntry(List<PictureEntity> entities) {
+  bool _containsFirstApodEntry(List<PictureEntity> entities) {
     return entities.first.date == DateTime.now().withoutTime();
   }
 

@@ -1,4 +1,4 @@
-import 'package:apod/data/model/picture_entity.dart';
+part of 'picture_list_bloc.dart';
 
 sealed class PictureListEvent {}
 

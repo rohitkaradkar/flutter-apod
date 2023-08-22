@@ -36,7 +36,7 @@ class PictureDetailsBloc
       emit(
         state.copyWith(
           selectedPictureIndex: index.clamp(0, entities.length),
-          pictures: entities.map(mapToPictureDetailEntity).toList(),
+          pictures: entities.map(mapPictureEntityToDetailItem).toList(),
           status: PictureDetailsStatus.success,
         ),
       );
@@ -48,7 +48,7 @@ class PictureDetailsBloc
     Emitter<PictureDetailsState> emit,
   ) {
     final items = event.entities
-        .map((e) => mapToPictureDetailEntity(e))
+        .map((e) => mapPictureEntityToDetailItem(e))
         .toList(growable: false);
     emit(state.copyWith(pictures: items, status: PictureDetailsStatus.success));
   }
