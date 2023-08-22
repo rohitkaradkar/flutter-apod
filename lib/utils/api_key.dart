@@ -1,1 +1,1 @@
-const kNasaApiKey = '***REMOVED***';
+const kNasaApiKey = 'DEMO_KEY';

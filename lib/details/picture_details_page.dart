@@ -19,7 +19,6 @@ class PictureDetailsPage extends StatelessWidget {
         repository: PictureRepository(pageSize: kApiPageSize),
       )..add(InitialisePictureDetails(defaultItemDate: selectedItemDate)),
       child: Scaffold(
-        extendBodyBehindAppBar: false,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.close_rounded),

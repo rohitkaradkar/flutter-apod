@@ -71,8 +71,8 @@ class PictureRepository {
   PictureEntity _mapResponseToEntity(PictureResponse response) {
     return PictureEntity(
       date: response.date,
-      copyright: response.copyright,
-      explanation: response.explanation,
+      copyright: response.copyright?.trim(),
+      explanation: response.explanation.trim(),
       hdImageUrl: response.hdImageUrl,
       imageUrl: response.imageUrl,
       title: response.title,
