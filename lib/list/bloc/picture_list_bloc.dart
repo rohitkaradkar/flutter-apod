@@ -66,7 +66,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
     InitialisePictureList event,
     Emitter<PictureListState> emit,
   ) async {
-    final stream = repository.getEntities();
+    final stream = repository.getEntities().asBroadcastStream();
     final entities = await stream.first;
     if (entities.isEmpty) {
       add(FetchPictures());
@@ -76,16 +76,12 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
         add(FetchPictures());
       }
     }
-    // _entityStream?.cancel();
-    // _entityStream = repository.getEntities().debounce(_debounceTime).listen(
-    //   (entities) {
-    //     if (entities.isEmpty && state.status != PictureListStatus.error) {
-    //       add(FetchPictures());
-    //     } else if (entities.isNotEmpty) {
-    //       add(PicturesLoaded(entities));
-    //     }
-    //   },
-    // );
+    _entityStream?.cancel();
+    _entityStream = stream.listen((entities) {
+      if (entities.isNotEmpty) {
+        add(PicturesLoaded(entities));
+      }
+    });
   }
 
   bool _containsFirstApodEntry(List<PictureEntity> entities) {

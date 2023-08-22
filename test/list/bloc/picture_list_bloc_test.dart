@@ -79,7 +79,9 @@ void main() {
     blocTest(
       'fetches new items when local entities are absent',
       setUp: () {
-        when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
+        when(repository.getEntities()).thenAnswer(
+              (_) => Stream<List<PictureEntity>>.value([]),
+        );
       },
       build: () => bloc,
       act: (bloc) => bloc.add(InitialisePictureList()),
@@ -89,6 +91,32 @@ void main() {
       },
     );
 
-    blocTest('', build: () => bloc);
+    blocTest(
+      'state is updated when new entities are added',
+      setUp: () {
+        when(repository.getEntities()).thenAnswer(
+          (_) => Stream.fromIterable([[], fakeEntities]),
+        );
+      },
+      build: () => bloc,
+      act: (bloc) => bloc.add(InitialisePictureList()),
+      wait: Duration.zero,
+      expect: () {
+        return [
+          const PictureListState(
+            status: PictureListStatus.loading,
+            pictures: [],
+          ),
+          const PictureListState(
+            status: PictureListStatus.success,
+            pictures: [],
+          ),
+          PictureListState(
+            status: PictureListStatus.success,
+            pictures: fakeItems,
+          ),
+        ];
+      },
+    );
   });
 }
