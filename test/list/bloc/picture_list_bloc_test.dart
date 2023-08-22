@@ -80,7 +80,7 @@ void main() {
       'fetches new items when local entities are absent',
       setUp: () {
         when(repository.getEntities()).thenAnswer(
-              (_) => Stream<List<PictureEntity>>.value([]),
+          (_) => Stream<List<PictureEntity>>.value([]),
         );
       },
       build: () => bloc,
@@ -114,6 +114,29 @@ void main() {
           PictureListState(
             status: PictureListStatus.success,
             pictures: fakeItems,
+          ),
+        ];
+      },
+    );
+
+    blocTest(
+      'emits error state when fetching next page fails',
+      setUp: () {
+        when(repository.getEntities()).thenAnswer((_) => Stream.value([]));
+        when(repository.fetchNextPage()).thenThrow(Exception());
+      },
+      build: () => bloc,
+      act: (bloc) => bloc.add(InitialisePictureList()),
+      wait: Duration.zero,
+      expect: () {
+        return [
+          const PictureListState(
+            status: PictureListStatus.loading,
+            pictures: [],
+          ),
+          const PictureListState(
+            status: PictureListStatus.error,
+            pictures: [],
           ),
         ];
       },
