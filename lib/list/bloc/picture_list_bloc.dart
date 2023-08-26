@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:apod/data/apod_pager.dart';
 import 'package:apod/data/model/picture_entity.dart';
 import 'package:apod/data/picture_repository.dart';
 import 'package:apod/list/model/picture_item.dart';
+import 'package:apod/utils/logger.dart';
 import 'package:apod/utils/mappers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -49,7 +49,7 @@ class PictureListBloc extends Bloc<PictureListEvent, PictureListState> {
       await repository.fetchNextPage();
       emit(state.copyWith(status: PictureListStatus.success));
     } catch (e, stacktrace) {
-      log('error fetching next page', error: e, stackTrace: stacktrace);
+      logger.e('error fetching next page', error: e, stackTrace: stacktrace);
       emit(state.copyWith(status: PictureListStatus.error));
     }
   }

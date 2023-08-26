@@ -1,12 +1,11 @@
-import 'dart:developer';
-
+import 'package:apod/utils/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    log(
+    logger.i(
       """
     Transition
     - currentState: ${transition.currentState},
@@ -18,13 +17,13 @@ class SimpleBlocObserver extends BlocObserver {
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    log('Bloc onError', error: error, stackTrace: stackTrace);
+    logger.e('Bloc onError', error: error, stackTrace: stackTrace);
     super.onError(bloc, error, stackTrace);
   }
 
   @override
   void onEvent(Bloc bloc, Object? event) {
-    log('Bloc onEvent -> $event');
+    logger.t('Bloc onEvent -> $event');
     super.onEvent(bloc, event);
   }
 }
