@@ -14,13 +14,14 @@ then
   exit 1
 elif [ ! -f $hookFile ]
 then
-  echo 'Installing flutter test'
   echo 'flutter test' >> $hookFile
   appendCheckSuccess
 
-  echo 'Installing dart formatting'
   echo 'dart format -o none --set-exit-if-changed .' >> $hookFile
   appendCheckSuccess
+
+  chmod +x $hookFile
+  echo 'pre-push hook added'
 else
   echo 'pre-push hook already present'
   echo 'check .git/hooks/pre-push for more details'
