@@ -2,23 +2,26 @@
 hookFile='.git/hooks/pre-push'
 gitDir='.git'
 
-# function that checks if previous command was successful else exits
-function appendCheckSuccess() {
-  # shellcheck disable=SC2028
-  echo "if [ \$? -ne 0 ]; then\\n exit 1\\nfi" >> $hookFile
-}
-
 if [ ! -d $gitDir ]
 then
   echo 'git not initialised yet'
   exit 1
 elif [ ! -f $hookFile ]
 then
-  echo 'flutter test' >> $hookFile
-  appendCheckSuccess
+  # append following CMD outputs to pre-push hook file
+  {
+    echo "if ! flutter test;
+    then
+      echo 'flutter test failed'
+      exit 1
+    fi"
 
-  echo 'dart format -o none --set-exit-if-changed .' >> $hookFile
-  appendCheckSuccess
+    echo "if ! dart format -o none --set-exit-if-changed .;
+    then
+      echo 'incorrect dart formatting'
+      exit 1
+    fi"
+  } >> $hookFile
 
   chmod +x $hookFile
   echo 'pre-push hook added'
