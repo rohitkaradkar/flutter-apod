@@ -50,7 +50,7 @@ class PictureRepository {
       'start_date': pageData.startDate,
       'end_date': pageData.endDate,
     };
-    final uri = Uri.http(kNasaBaseURL, '/planetary/apod', queryParams);
+    final uri = Uri.https(kNasaBaseURL, '/planetary/apod', queryParams);
     logger.i('fetching $uri');
     final response = await httpClient.get(uri);
 

@@ -1,4 +1,4 @@
-package com.example.apod
+package com.rohitkaradkar.apod
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -22,11 +22,16 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
+def googleServicesJsonFile = file('google-services.json')
+if (googleServicesJsonFile.exists()) {
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
+}
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace "com.example.apod"
+    namespace "com.rohitkaradkar.apod"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -51,6 +56,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {

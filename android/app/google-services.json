@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "481340380447",
+    "project_id": "flutter-apod",
+    "storage_bucket": "flutter-apod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:012345678901:ios:1234567890123456789012",
+        "android_client_info": {
+          "package_name": "com.rohitkaradkar.apod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481340380447-om8v01gl7kb0nru4ub4qifkqehivs7ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "APlaceholderAPIKeyWith-ThirtyNineCharsX"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481340380447-om8v01gl7kb0nru4ub4qifkqehivs7ns.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "481340380447-hj2vedc8sq5j05svdsr9bk6lvdtrc4ki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.apod"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:012345678901:ios:1234567890123456789012",
+        "android_client_info": {
+          "package_name": "com.rohitkaradkar.apod.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481340380447-om8v01gl7kb0nru4ub4qifkqehivs7ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "APlaceholderAPIKeyWith-ThirtyNineCharsX"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481340380447-om8v01gl7kb0nru4ub4qifkqehivs7ns.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "481340380447-hj2vedc8sq5j05svdsr9bk6lvdtrc4ki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.apod"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
