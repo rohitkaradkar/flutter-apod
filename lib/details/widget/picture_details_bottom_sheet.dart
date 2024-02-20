@@ -28,6 +28,21 @@ class _PictureDetailsBottomSheetState extends State<PictureDetailsBottomSheet> {
           minChildSize: 0.15,
           builder: (context, controller) {
             final children = <Widget>[
+              // Drag handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Text(
                 picture.title,
                 style: Theme.of(context).textTheme.headlineSmall,
@@ -41,7 +56,7 @@ class _PictureDetailsBottomSheetState extends State<PictureDetailsBottomSheet> {
               )
             ];
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: ListView(
                 controller: controller,
                 children: children,
